@@ -25,7 +25,7 @@ def get_price_data(tickers, start, end,interval,adj_close=False):
 def calculate_returns(data):
     """
     Input: 
-        data: List of dataframes with historical price data
+        data: dataframe with historical prices
     Output:
         returns for Adjusted Close price by formula R = log(P_t/P_(t-1))
     """
@@ -36,6 +36,18 @@ def calculate_returns(data):
         r = np.log(float(data['Adj Close'][i+1])/float(data['Adj Close'][i]))
         returns.append(r)
     return returns
+
+def yearly_returns(weekly_returns):
+    """
+    Input: 
+        List of weekly returns as obtained by the 'calculate_returns' function
+    Output:
+        Yearly returns (sum of daily)
+    Note: Assumes 52 weeks per year
+    """
+    yr_returns = np.add.reduceat(weekly_returns,np.arange(0,len(weekly_returns),52))
+    return yr_returns
+
 
 
 
