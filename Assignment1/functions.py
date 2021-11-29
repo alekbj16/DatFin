@@ -1,5 +1,6 @@
 import pandas_datareader as web
 import datetime as dt
+import numpy as np
 
 def get_price_data(tickers, start, end,interval,adj_close=False):
     """
@@ -21,7 +22,20 @@ def get_price_data(tickers, start, end,interval,adj_close=False):
         return data_adj_closed
     return data
 
-
+def calculate_returns(data):
+    """
+    Input: 
+        data: List of dataframes with historical price data
+    Output:
+        returns for Adjusted Close price by formula R = log(P_t/P_(t-1))
+    """
+    returns = []
+    for i in range(0,len(data)):
+        if i == len(data)-1:
+            break
+        r = np.log(float(data['Adj Close'][i+1])/float(data['Adj Close'][i]))
+        returns.append(r)
+    return returns
 
 
 

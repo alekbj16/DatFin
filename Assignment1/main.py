@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_datareader as web
 import datetime as dt
-from get_price_data import get_price_data
+from functions import calculate_returns, get_price_data
 
 #***1: Data collection***
 tickers = ["MCD","KO","MSFT"] #McDonalds, Coca-Cola, Microsoft
@@ -16,8 +16,15 @@ data_mcd = data[0]
 data_ko = data[1]
 data_msft = data[2]
 
+#print(np.log(data_mcd['Adj Close'][2]/data_mcd['Adj Close'][1]))
 
 #***2: Calculate continous returns***
+returns_mcd = calculate_returns(data_mcd)
+returns_ko = calculate_returns(data_ko)
+return_msft = calculate_returns(data_msft)
+
+
+
 
 
 
