@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_datareader as web
 import datetime as dt
-from functions import calculate_returns, covariance_matrix, get_price_data, portofolio_strategies, yearly_returns
+from functions import calculate_returns, covariance_matrix, get_price_data, portofolio_strategies, yearly_returns, mean_vs_stdevs
 
 #***1: Data collection***
 tickers = ["MCD","KO","MSFT"] #McDonalds, Coca-Cola, Microsoft
@@ -33,10 +33,13 @@ covar_mat = covariance_matrix([yrly_mcd,yrly_ko,yrly_msft])
 #***4: Portofolio asset percentages***
 X = portofolio_strategies()
 
-
-
-
-
+#***5: Yearly mean and yearly SD for various portofolio percentages***
+means, stdevs = mean_vs_stdevs(X,[mean_returns[0],mean_returns[1],mean_returns[2]])
+plt.style.use('seaborn')
+plt.xlabel("Mean")
+plt.ylabel("Stdev")
+plt.scatter(stdevs,means)
+plt.show() #Damn baby it's textbook! 
 
 
 

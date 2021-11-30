@@ -91,6 +91,24 @@ def portofolio_strategies():
                 X.append([i,j,1-i-j])
     return np.array(X)
         
+def mean_vs_stdevs(portofolio_strategy,mean_returns):
+    """
+    Too lazy to write description but solves part 5
+    """
+    mean_matrix = []
+    for asset_strategy in portofolio_strategy:
+        mcd_returns = asset_strategy[0]*mean_returns[0]
+        ko_returns = asset_strategy[1]*mean_returns[1]
+        msft_returns = asset_strategy[2]*mean_returns[2]
+        mean_matrix.append([mcd_returns,ko_returns,msft_returns])
+
+    returns = []
+    stds = []
+    for row in mean_matrix:
+        returns.append(sum(row))
+        stds.append(np.std(row))
+
+    return returns, stds
 
 
 
