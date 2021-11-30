@@ -48,6 +48,30 @@ def yearly_returns(weekly_returns):
     yr_returns = np.add.reduceat(weekly_returns,np.arange(0,len(weekly_returns),52))
     return yr_returns
 
+def covariance_matrix(data):
+    """
+    Input:
+        data is array on form [yrly_mcd,yrly_ko,yrly_msft]
+    Output:
+        Corvariance matrix as described in assignment
+    """
+    
+    #Variance of returns
+    var_returns = np.array([np.var(data[0]),np.var(data[1]),np.var(data[2])])
+    s = np.zeros((3,3))
+    #Covar coefficients
+    s_mcd_ko = np.corrcoef(np.array((data[0],data[1])))[0,1]
+    s_mcd_msft = np.corrcoef(np.array((data[0],data[2])))[0,1]
+    s_ko_msft = np.corrcoef(np.array((data[1],data[2])))[0,1]
+    s[0,1] = s_mcd_ko
+    s[1,0] = s_mcd_ko
+    s[0,2] = s_mcd_msft
+    s[2,0] = s_mcd_msft
+    s[1,2] = s_ko_msft
+    s[2,1] = s_ko_msft
+    np.fill_diagonal(s,var_returns)
+    return s
+
 
 
 

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_datareader as web
 import datetime as dt
-from functions import calculate_returns, get_price_data, yearly_returns
+from functions import calculate_returns, covariance_matrix, get_price_data, yearly_returns
 
 #***1: Data collection***
 tickers = ["MCD","KO","MSFT"] #McDonalds, Coca-Cola, Microsoft
@@ -16,8 +16,6 @@ data_mcd = data[0]
 data_ko = data[1]
 data_msft = data[2]
 
-#print(np.log(data_mcd['Adj Close'][2]/data_mcd['Adj Close'][1]))
-
 #***2: Calculate continous returns***
 returns_mcd = calculate_returns(data_mcd)
 returns_ko = calculate_returns(data_ko)
@@ -28,8 +26,9 @@ yrly_mcd = yearly_returns(returns_mcd)
 yrly_ko = yearly_returns(returns_ko)
 yrly_msft = yearly_returns(returns_msft)
 
-mean_returns = np.array([np.mean(yrly_mcd),np.mean(yrly_ko),np.mean(yrly_msft)])
-print(mean_returns)
+mean_returns = np.array([np.mean(yrly_mcd),np.mean(yrly_ko),np.mean(yrly_msft)]) #Mean of yearly returns
+covar_mat = covariance_matrix([yrly_mcd,yrly_ko,yrly_msft])
+print(covar_mat)
 
 
 
