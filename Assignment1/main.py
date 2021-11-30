@@ -41,6 +41,25 @@ plt.ylabel("Stdev")
 plt.scatter(stdevs,means)
 plt.show() #Damn baby it's textbook! 
 
+#***6: Maximal mean portofolio***
+max_return_val = np.max(means)
+max_return_idx = np.where(means == np.max(means))
+optimal_portofolio = X[max_return_idx]
+print(f"Optimal portofolio strategy is {optimal_portofolio}, which means put it all in Microsoft")
+
+#***7: Minimum standard dev***
+min_std_val = np.min(stdevs)
+min_std_idx = np.where(stdevs == np.min(stdevs))
+print(f"Min std is {min_std_val}")
+print(f"This stdev is found for portofolio {X[min_std_idx]}")
+
+#***8: Maximum mean to std ratio***
+mean_to_std = np.divide(means,stdevs)
+max_mean_to_std = np.max(mean_to_std)
+max_idx = np.where(mean_to_std == np.max(mean_to_std))
+print(f"Max mean to std ratio is {max_mean_to_std}")
+print(f"This belongs to the portofolio{X[max_idx]}") #Note, same portofolio that has lowest std
+#This portofolio is interesting because it yeals the best relationship between expected return and risk. 
 
 
 
