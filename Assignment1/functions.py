@@ -72,6 +72,26 @@ def covariance_matrix(data):
     np.fill_diagonal(s,var_returns)
     return s
 
+def portofolio_strategies():
+    """
+    X = [x1,x2,1-x1-x2] for all possibilities,
+    e.g.: 
+        [[1.0,0.0,0.0],
+         [0.9,0.1,0.0],
+         [0.8,0.2,0.0],
+        ...
+         [0.0,0.0,1.0]]
+    """
+    X = []
+    x1 = np.arange(0.0,1.0,0.1)[::-1]
+    x2 = np.arange(0.0,1.0,0.1)
+    for i in x1:
+        for j in x2:
+            if (j+i) <= 1.0:
+                X.append([i,j,1-i-j])
+    return np.array(X)
+        
+
 
 
 

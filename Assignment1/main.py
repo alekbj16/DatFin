@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pandas_datareader as web
 import datetime as dt
-from functions import calculate_returns, covariance_matrix, get_price_data, yearly_returns
+from functions import calculate_returns, covariance_matrix, get_price_data, portofolio_strategies, yearly_returns
 
 #***1: Data collection***
 tickers = ["MCD","KO","MSFT"] #McDonalds, Coca-Cola, Microsoft
@@ -28,7 +28,13 @@ yrly_msft = yearly_returns(returns_msft)
 
 mean_returns = np.array([np.mean(yrly_mcd),np.mean(yrly_ko),np.mean(yrly_msft)]) #Mean of yearly returns
 covar_mat = covariance_matrix([yrly_mcd,yrly_ko,yrly_msft])
-print(covar_mat)
+#print(covar_mat)
+
+#***4: Portofolio asset percentages***
+X = portofolio_strategies()
+
+
+
 
 
 
