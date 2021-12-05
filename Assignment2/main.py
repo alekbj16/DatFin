@@ -2,7 +2,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 plt.style.use("seaborn")
-from numpy.lib.twodim_base import diag 
+from numpy.lib.twodim_base import diag
+from  functions import * 
 
 #***1: Efficient frontier with and withoud riskless lending and borrowing***
 
@@ -14,50 +15,37 @@ s_2 = 0.20 #Asset 2 standard dev
 
 corr_coeff = np.array([1,0.5,0,-1]) #The different correlation coefficients between asset 1 and 2
 
+
 #***1.1: How to plot efficient frontier *with* borrowing
 
 #****1.1.1: 
 #For the case rho = 0.5
+
 rho = corr_coeff[1]
-correlation_matrix = np.zeros((2,2))
-correlation_matrix[0,0] = 1
-correlation_matrix[1,1] = 1
-correlation_matrix[0,1] = rho
-correlation_matrix[1,0] = rho
-
-mu = np.array([r_1,r_2])
-sigma = np.array([s_1,s_2])
-omega = np.dot(np.dot(np.diag(sigma),correlation_matrix),diag(sigma)) #Could have used numpy multidot
-print(omega)
+opt_portofolio = optimal_portofolio(r_f=r_f,r_1=r_1,r_2=r_2,s_1=s_1,s_2=s_2,rho=rho)
+opt_portofolio_returns = portofolio_return(r_1=r_1,r_2=r_2,X_opt=opt_portofolio)
+opt_portofolio_var = portofolio_variance(r_1,r_2,s_1=s_1,s_2=s_2,X_opt=opt_portofolio,rho=rho)
 
 
-A = 2*omega
-A = np.c_[ A, -(mu-r_f)]
-A = np.vstack([A, np.append([(mu-r_f)],0)])
-
-r_p = 0.4 #Assuming a trivial value for expected return. Does not affect when finding optimal X because of normalization
-b = np.zeros((2,1))
-b = np.vstack([b,r_p-r_f])
-
-X = np.dot(np.linalg.inv(A),b)
-print(f"X{X}")
-X_opt = X[0:2]*(1/np.sum(X[0:2]))
-print(X_opt)
-
-return_optimal = X_opt[0]*r_1 + X_opt[1]*r_2
-print(return_optimal)
-
-var = (X_opt[0]**2)*(s_1**2)+(X_opt[1]**2)*(s_2**2)+2*X_opt[0]*X_opt[1]*s_1*s_2*rho
-slope = (return_optimal-r_f)/var
-print(var)
-print(slope)
-x = np.linspace(0,5.0,100)
-f_x = slope*x+r_f
-plt.plot(x,f_x)
+x = np.linspace(0,0.04,10)
+r_f = np.linspace(0.02,0.08,4)
+for i in r_f:
+    slope = get_slope(r_f=i,portofolio_return=opt_portofolio_returns,portofolio_variance=opt_portofolio_var)
+    f_x = slope*x+i
+    plt.plot(x,f_x,label=f"r_f = {i}")
+plt.title(f"\u03C1 = {rho}")
+plt.legend()
+plt.xlabel("Standard deviation")
+plt.ylabel("Expected return")
 plt.show()
 # Xopt is the point which has highest slope and 
 # describes the optimal amount of stock
 
 #print(correlation_matrix)
 #print(omega)
+
+# Assume that a riskless lending and borrowing rate exists
+# and find the optimum portfolio. Then assume that a different riskless lending and borrowing
+# rate exists and find the optimum portfolio that corresponds to this second rate.
+# Continue changing the assumed riskless rate until the full efficient frontier is determined.
 
