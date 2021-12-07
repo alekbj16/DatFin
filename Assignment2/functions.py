@@ -3,30 +3,41 @@ from numpy.core.fromnumeric import var
 from numpy.lib.twodim_base import diag 
 import pandas_datareader as web
 
-def optimal_portofolio(r_f,r_1,r_2,s_1,s_2,rho):
-    correlation_matrix = np.zeros((2,2))
-    correlation_matrix[0,0] = 1
-    correlation_matrix[1,1] = 1
-    correlation_matrix[0,1] = rho
-    correlation_matrix[1,0] = rho
-    mu = np.array([r_1,r_2])
-    sigma = np.array([s_1,s_2])
-    omega = np.dot(np.dot(np.diag(sigma),correlation_matrix),diag(sigma)) #Could have used numpy multidot
+def optimal_portofolio(r_f,returns,stdevs,rho):
+    """
+    Finds the optimal portofolio as described in lecture
+    """
+    no_of_stocks = len(returns)
+    correlation_matrix = np.zeros((no_of_stocks,no_of_stocks))
+    correlation_matrix.fill(rho) #Fill the matrix with rho
+    np.fill_diagonal(correlation_matrix,1) #Change the matrix diagonal to 1 because those will naturally always be 100% correlated.
+    omega = np.linalg.multi_dot([np.diag(stdevs),correlation_matrix,np.diag(stdevs)]) #Could have used numpy multidot
     A = 2*omega
-    A = np.c_[ A, -(mu-r_f)]
-    A = np.vstack([A, np.append([(mu-r_f)],0)])
+    A = np.c_[ A, -(returns-r_f)]
+    A = np.vstack([A, np.append([(returns-r_f)],0)])
     r_p = 0.4 #Assuming a trivial value for expected return. Does not affect when finding optimal X because of normalization
-    b = np.zeros((2,1))
+    b = np.zeros((no_of_stocks,1))
     b = np.vstack([b,r_p-r_f])
     X = np.dot(np.linalg.inv(A),b)
-    X_opt = X[0:2]*(1/np.sum(X[0:2]))
+    X_opt = X[0:no_of_stocks]*(1/np.sum(X[0:no_of_stocks]))
     return X_opt
 
-def portofolio_return(r_1,r_2,X_opt):
-    return X_opt[0]*r_1 + X_opt[1]*r_2
+def portofolio_return(returns,X_opt):
+    """
+    Calculates return of portofolio based on strategy described in X_opt
+    """
+    port_ret = 0
+    no_of_stocks = len(returns)
+    for i in range(no_of_stocks):
+        port_ret += X_opt[i]*returns[i]
+    return port_ret
 
-def portofolio_variance(r_1,r_2,s_1,s_2,X_opt,rho):
-    return (X_opt[0]**2)*(s_1**2)+(X_opt[1]**2)*(s_2**2)+2*X_opt[0]*X_opt[1]*s_1*s_2*rho
+def portofolio_variance_2d(stdevs,X_opt,rho):
+    """
+    Calculates variance of portofolio between two assets. 
+    """
+    return (X_opt[0]**2)*(stdevs[0]**2)+(X_opt[1]**2)*(stdevs[1]**2)+2*X_opt[0]*X_opt[1]*stdevs[0]*stdevs[1]*rho
+
 
 def get_slope(r_f,portofolio_return,portofolio_variance):
     return (portofolio_return-r_f)/portofolio_variance
@@ -62,13 +73,14 @@ def portofolio_strategies():
 #         returns.append(strategies[0][i]*r_1+strategies[1][i]*r_2)
 #     return np.array(returns)
 
-def calculate_variances(strategies,r_1,r_2,s_1,s_2,rho):
+def calculate_variances(strategies,s_1,s_2,rho):
     variances = []
     for i in range(0,len(strategies[0])):
         variances.append((strategies[0][i]**2)*(s_1**2)+(strategies[1][i]**2)*(s_2**2)+2*strategies[0][i]*strategies[0][i]*s_1*s_2*rho)
     return np.array(variances)
 
 def mean_to_var(means,vars):
+    "Mean to variance ratio"
     return np.divide(means,vars)
 
 
