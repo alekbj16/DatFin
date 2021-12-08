@@ -1,6 +1,6 @@
 from functions import *
 import datetime as dt
-from sklearn.linear_model import LinearRegression
+
 
 #*** Signle Asset Model***
 
@@ -61,6 +61,65 @@ ko_variance_yr = np.var(ko_returns_yr)
 sp500_returns_wk = calculate_returns(data=data_sp500) #Weekly returns
 sp500_returns_yr = yearly_returns(sp500_returns_wk)
 sp500_variance_yr = np.var(sp500_returns_yr)
+
+
+
+# *** Regression model and parameters***
+
+#American Express
+alpha_apx, beta_apx, var_ei_apx = calculate_parameters(sp500_returns_yr, apx_returns_yr)
+
+#McDonalds
+alpha_mcd, beta_mcd, var_ei_mcd = calculate_parameters(sp500_returns_yr, mcd_returns_yr)
+
+#Google
+alpha_goog, beta_goog, var_ei_goog = calculate_parameters(sp500_returns_yr, goog_returns_yr)
+
+#Exxon 
+alpha_xom, beta_xom, var_ei_xom = calculate_parameters(sp500_returns_yr, xom_returns_yr)
+
+#IBM
+alpha_ibm, beta_ibm, var_ei_ibm = calculate_parameters(sp500_returns_yr, ibm_returns_yr)
+
+#WallMart
+alpha_wmt, beta_wmt, var_ei_wmt = calculate_parameters(sp500_returns_yr, wmt_returns_yr)
+
+#Coke
+alpha_ko, beta_ko, var_ei_ko = calculate_parameters(sp500_returns_yr, ko_returns_yr)
+
+# *** Co-variance matrix *** 
+yearly_returns = np.array([apx_returns_yr,mcd_returns_yr,goog_returns_yr,xom_returns_yr,ibm_returns_yr,wmt_returns_yr,ko_returns_yr])
+#print(f"\nReal yearly co-variance matrix of the continous stock returns:\n\n{covariance_matrix(yrly_data=yearly_returns)}\n\n")
+
+# *** 
+#Equally weighted portofolio using real data
+X = np.array([1/7 for i in range(7)])
+mean_returns = np.array([np.mean(i) for i in yearly_returns])
+stds = np.array([np.std(i) for i in yearly_returns])
+
+expected_return = np.sum((1/7)*mean_returns)
+variance = np.var((1/7)*mean_returns)
+print("===========")
+print("Real estimation, equal weighted portofolio")
+print(f"Expected return: {expected_return}")
+print(f"Variance: {variance}")
+print("===========")
+
+
+print("\n\n===========")
+print("Single index model, equal weighted portofolio")
+alphas = np.array([alpha_apx,alpha_mcd,alpha_goog,alpha_xom,alpha_ibm,alpha_wmt,alpha_ko])
+betas = np.array([beta_apx,beta_mcd,beta_goog,beta_xom,beta_ibm,beta_wmt,beta_ko])
+vars = np.array([var_ei_apx,var_ei_mcd,var_ei_goog,var_ei_xom,var_ei_ibm,var_ei_wmt,var_ei_ko])
+expected_return_sim = np.sum((1/7)*alphas) + np.sum((1/7)*np.mean(sp500_returns_yr)*betas)
+beta_portfolio = np.sum([(1/7)*betas]) # formula from in p.135 in book
+variance_smi = (beta_portfolio**2)*sp500_variance_yr + np.sum(((1/7)**2)*vars)
+print(f"Expected return: {expected_return_sim}")
+print(f"Variance: {variance_smi}")
+print("===========")
+
+print("\nThe two methods show similar expected return, but large differences in variances\n")
+
 
 
 

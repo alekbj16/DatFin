@@ -2,6 +2,8 @@ import pandas_datareader as web
 import datetime as dt
 import numpy as np
 import pandas as pd
+import statsmodels.api as sm
+from statsmodels import regression
 
 def get_price_data(tickers, start, end,interval,adj_close=False):
     """
@@ -49,3 +51,29 @@ def yearly_returns(weekly_returns):
     yr_returns = np.add.reduceat(weekly_returns,np.arange(0,len(weekly_returns),52))
     return yr_returns
 
+def linreg(x,y):
+    """
+    Linear regression using statsmodels package
+    """
+    x = sm.add_constant(x)
+    model = regression.linear_model.OLS(y,x).fit()
+    return model
+
+def calculate_parameters(x,y):
+    model = linreg(x,y)
+    alpha = model.params[0]
+    beta = model.params[1]
+    var_ei = np.var(model.resid,ddof=1)
+    return alpha, beta, var_ei
+
+def covariance_matrix(yrly_data):
+    cov_mat = []
+    for i in range(len(yrly_data)):
+        cov_mat.append(np.array(yrly_data[i]))
+    cov_mat = np.array(cov_mat)
+    cov_mat = np.cov(cov_mat)
+    return cov_mat
+
+
+
+    
